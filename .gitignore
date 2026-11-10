@@ -1,0 +1,18 @@
+# ไฟล์ของเครื่องแต่ละคน
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+.venv-utils/
+tools/marketdata/.venv/
+.env
+tools/marketdata/.edgar-identity
+.friday-root
+.claude/settings.local.json
+
+# ผลงานที่แต่ละคนสร้างเอง
+outputs/*
+!outputs/.gitkeep
+scratch/*
+!scratch/.gitkeep
+!scratch/*-check-fixtures/

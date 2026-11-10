@@ -1,0 +1,313 @@
+{
+  "schema_version": 1,
+  "baseline_rules_other_profiles": {
+    "tony": "กฎที่ tony_check.py บังคับ (แหล่งความจริงเดียว)\n\n1-yaml       ฟิลด์บังคับ: ticker, company, form, fiscal_year, accession, filing_date, as_of, lynch_category, revenue_total, largest_segment, price, tiers_used, exec_summary\n             ห้ามมี:      score, conviction, verdict, rating, recommendation, target_price, fair_value, คะแนน\n             ทุกฟิลด์บังคับต้องมีค่าจริง — null / สตริงว่าง / list ว่าง = ขาด\n             exec_summary ต้องเป็น list 5–7 รายการ\n2-sections   ต้องมี §0–§9 ครบ ชื่อตรง และเรียง 0→9:\n               §0 THE STORY & LYNCH CATEGORY\n               §1 REVENUE BREAKDOWN\n               §2 REVENUE MODEL\n               §3 VALUE CHAIN & BARGAINING POWER\n               §4 OPERATING LEVERAGE\n               §5 CUSTOMER COHORT & RETENTION\n               §6 RISK FACTORS\n               §7 TONY'S TAKE\n               §8 PLAIN-LANGUAGE SUMMARY\n               §9 APPENDIX\n2b-opinion   §0–§7 ทุกอันต้องมีบรรทัดที่ขึ้นต้นด้วย '(ความเห็น:' อยู่ในตัว section\n3-verdict    ห้ามมีคำแนะนำลงทุน — จับ 30 รูปแบบไทย / 12 คำอังกฤษ:\n               ไทย:    น่าซื้อ · น่าขาย · น่าลงทุน · น่าสนใจลงทุน · ควรซื้อ · ควรขาย · ควรถือ · แนะนำซื้อ · แนะนำขาย · แนะนำถือ · ทยอยซื้อ · ไม่ควรลงทุน · คุ้มที่จะลงทุน · น่าเข้าซื้อ · ควรเข้าซื้อ · ทยอยเข้าซื้อ · จังหวะ/จุดเข้าซื้อ · เข้าซื้อสะสม · ควรเข้าลงทุน · ควรออกจากหุ้น/การลงทุน · ควรหลีกเลี่ยงหุ้น · หุ้นถูก (ราคาหุ้น) · หุ้นราคาถูก · หุ้นแพง · หุ้นราคาแพง · ราคาเป้าหมาย · มูลค่าเหมาะสม · ราคาที่เหมาะสม · ราคาต่ำ/สูงกว่ามูลค่าที่แท้จริง · ซื้อดีไหม\n               อังกฤษ: target price · price target · fair value · upside · downside · overweight · underweight · buy rating · sell rating · undervalued · overvalued · strong buy\n             (เนื้อหาธุรกิจปกติผ่านได้ เช่น 'เข้าซื้อกิจการ' · 'สินค้าราคาถูก' ·\n              'หุ้นถูกซื้อคืน' — คำกำกวมต้องผูกกับบริบทราคาหุ้นถึงจะ FAIL)\n4-citation   ทุก 'แถว' ตารางนอก §9 ที่มีตัวเลขข้อเท็จจริง ต้องมี\n             [ฟอร์ม ... Item ...] หรือ [tier2]/[tier3] อยู่ในแถวนั้นเอง\n             ยกเว้น: เลขลำดับล้วน 1–2 หลัก (คอลัมน์ # ของ §6) และแถวที่มี\n             [ไม่เปิดเผย]/[ข้อมูลไม่พอ]\n5-placeholder ห้ามมี [ยังไม่มีข้อมูล] ค้าง\n6-page-cite  ห้ามอ้างเลขหน้า (หน้า N · p.N · page N · pp.N)\n7-appendix   §9 ต้องมี 2 ตาราง: ที่มา = 4 ช่อง (ตัวเลข|ฟอร์ม|งวด|Item)\n             และคำนวณ = 5 ช่อง (ชื่อ|สูตร|ตัวตั้ง|ตัวหาร|ผล) ห้ามมีช่องว่าง\n8-recompute  ทุกแถวตารางคำนวณถูกคิดซ้ำด้วย Decimal เป็น 'ตัวตั้ง ÷ ตัวหาร'\n             มี % ในสูตรหรือผล → คูณ 100 ให้เอง\n             ส่วนต่าง (Δ/YoY): ใส่ผลลบที่คำนวณแล้วเป็นตัวตั้ง แล้วกำกับ\n             การลบไว้ในวงเล็บ เช่น  10,000 (=110,000−100,000) [10-K FY2025, Item 8]\n             เครื่องตรวจจะตรวจการลบในวงเล็บนั้นซ้ำด้วย\n10-adjust-pair ถอดรายการครั้งเดียวออกจากฐานปีหนึ่งแล้ว ทุกแถวที่ยังใช้ฐานเดิม\n             (ตัวหารเดียวกัน) ต้องมีแถวคู่ที่คิดบนฐานที่ปรับแล้วด้วย\n             — กันการเอาสองปีคนละฐานมาเทียบกันในเนื้อเมโม\n11-adjust-period ปีของรายการที่ถอดออก ต้องตรงกับ 'งวด' ในตารางที่มา\n             — คอลัมน์งวด = ปีบัญชีที่ตัวเลขเกิด ไม่ใช่ปีของ filing ที่ไปอ่าน\n",
+    "rob": "กฎที่ rob_check.py บังคับ (แหล่งความจริงเดียว)\n\n1-yaml       ฟิลด์บังคับ: ticker, company, form, fiscal_year, accession, filing_date, as_of, moat_rating, moat_rating_basis, moat_trend, moat_trend_basis, moat_sources, peers, tam_usd, tam_source, tiers_used, exec_summary\n             ห้ามมี:      score, conviction, verdict, rating, recommendation, target_price, fair_value, คะแนน, price, market_cap, pe, pe_ratio, ev_ebitda, valuation\n             ทุกฟิลด์บังคับต้องมีค่าจริง — null / สตริงว่าง / list ว่าง = ขาด\n             moat_rating รับเฉพาะ: Wide | Narrow | No Moat\n             moat_trend รับเฉพาะ: Positive | Stable | Negative\n             peers ต้องเป็น list 3 รายการพอดี\n             exec_summary ต้องเป็น list 5–7 รายการ\n2-sections   ต้องมี §0–§9 ครบ ชื่อตรง และเรียง 0→9:\n               §0 THE ARENA\n               §1 MARKET SIZING & PROFIT POOL\n               §2 MOAT SOURCES\n               §3 PORTER'S 5 FORCES\n               §4 MOAT TREND\n               §5 PRICING POWER\n               §6 THREATS & VALUE MIGRATION\n               §7 ROB'S VERDICT\n               §8 PLAIN-LANGUAGE SUMMARY\n               §9 APPENDIX\n2b-opinion   §0–§7 ทุกอันต้องมีบรรทัดที่ขึ้นต้นด้วย '(ความเห็น:' อยู่ในตัว section\n2c-required-line §2 ต้องมีบรรทัด '**Bull:**' (ฝั่งที่บอกว่าคูเมืองแข็ง)\n2c-required-line §2 ต้องมีบรรทัด '**Bear:**' (ฝั่งที่บอกว่าคูเมืองเปราะ)\n2c-required-line §4 ต้องมีบรรทัด '**Bull:**' (ฝั่งที่บอกว่าคูเมืองแข็ง)\n2c-required-line §4 ต้องมีบรรทัด '**Bear:**' (ฝั่งที่บอกว่าคูเมืองเปราะ)\n2c-required-line §7 ต้องมีบรรทัด '**Bull:**' (ฝั่งที่บอกว่าคูเมืองแข็ง)\n2c-required-line §7 ต้องมีบรรทัด '**Bear:**' (ฝั่งที่บอกว่าคูเมืองเปราะ)\n3-verdict    ห้ามมีคำแนะนำลงทุน — จับ 30 รูปแบบไทย / 12 คำอังกฤษ:\n               ไทย:    น่าซื้อ · น่าขาย · น่าลงทุน · น่าสนใจลงทุน · ควรซื้อ · ควรขาย · ควรถือ · แนะนำซื้อ · แนะนำขาย · แนะนำถือ · ทยอยซื้อ · ไม่ควรลงทุน · คุ้มที่จะลงทุน · น่าเข้าซื้อ · ควรเข้าซื้อ · ทยอยเข้าซื้อ · จังหวะ/จุดเข้าซื้อ · เข้าซื้อสะสม · ควรเข้าลงทุน · ควรออกจากหุ้น/การลงทุน · ควรหลีกเลี่ยงหุ้น · หุ้นถูก (ราคาหุ้น) · หุ้นราคาถูก · หุ้นแพง · หุ้นราคาแพง · ราคาเป้าหมาย · มูลค่าเหมาะสม · ราคาที่เหมาะสม · ราคาต่ำ/สูงกว่ามูลค่าที่แท้จริง · ซื้อดีไหม\n               อังกฤษ: target price · price target · fair value · upside · downside · overweight · underweight · buy rating · sell rating · undervalued · overvalued · strong buy\n             (เนื้อหาธุรกิจปกติผ่านได้ เช่น 'เข้าซื้อกิจการ' · 'สินค้าราคาถูก' ·\n              'หุ้นถูกซื้อคืน' — คำกำกวมต้องผูกกับบริบทราคาหุ้นถึงจะ FAIL)\n4-citation   ทุก 'แถว' ตารางนอก §9 ที่มีตัวเลขข้อเท็จจริง ต้องมี\n             [ฟอร์ม ... Item ...] หรือ [tier2]/[tier3] อยู่ในแถวนั้นเอง\n             ยกเว้น: เลขลำดับล้วน 1–2 หลัก และแถวที่มี [ไม่เปิดเผย]/[ข้อมูลไม่พอ]\n             ตัวเลขจาก WebSearch/เว็บ = [tier3] เสมอ ห้ามใส่เป็น [ฟอร์ม ... Item ...]\n5-placeholder ห้ามมี [ยังไม่มีข้อมูล] ค้าง\n6-page-cite  ห้ามอ้างเลขหน้า (หน้า N · p.N · page N · pp.N)\n7-appendix   §9 ต้องมี 3 ตาราง: ที่มา = 4 ช่อง (ตัวเลข|ฟอร์ม|งวด|Item) ·\n             คำนวณ = 5 ช่องพอดี (ชื่อ|สูตร|ตัวตั้ง|ตัวหาร|ผล) ·\n             คู่แข่ง = 6 ช่อง (ticker|บริษัท|gross margin|งวด|ที่มา|เทียบได้ไหม)\n             ห้ามมีช่องว่าง — จำนวนช่องคือตัวจำแนกตาราง ผิดจำนวนจะถูกอ่านผิดกลุ่ม\n8-recompute  ทุกแถวตารางคำนวณถูกคิดซ้ำด้วย Decimal เป็น 'ตัวตั้ง ÷ ตัวหาร'\n             มี % ในสูตรหรือผล → คูณ 100 ให้เอง\n             ส่วนต่าง (Δ/YoY): ใส่ผลลบที่คำนวณแล้วเป็นตัวตั้ง แล้วกำกับ\n             การลบไว้ในวงเล็บ เช่น  10,000 (=110,000−100,000) [10-K FY2025, Item 8]\n             เครื่องตรวจจะตรวจการลบในวงเล็บนั้นซ้ำด้วย\n             วงเล็บ (= ...) คิดได้ทั้ง + − × ÷ และวงเล็บซ้อน\n             แถวที่ไม่ใช่การหาร (คูณ/บวก) ให้ใส่ตัวหาร = 1 แล้วผลเท่ากับตัวตั้ง\n1-yaml (ร็อบ) ไม่มีคูเมืองให้เขียน 'No Moat' — เขียน None จะถูกจับด้วยรายการ\n             ค่าที่ยอมรับข้างบน (PyYAML อ่าน None เป็นสตริง ไม่ใช่ null)\n             moat_rating_basis / moat_trend_basis บังคับมีและห้ามเว้นว่าง —\n             คำตัดสินต้องมีที่อ้าง เขียน \"\" เปล่า ๆ ไม่ผ่าน\n",
+    "adam": "กฎที่ adam_check.py บังคับ (แหล่งความจริงเดียว)\n\n1-yaml       ฟิลด์บังคับ: ticker, company, form, fiscal_year, accession, filing_date, as_of, alignment_verdict, alignment_verdict_basis, tiers_used, exec_summary\n             ห้ามมี:      score, คะแนน, conviction, rating, recommendation, verdict, target_price, fair_value, price, market_cap, pe, pe_ratio, ev_ebitda, valuation\n             ทุกฟิลด์บังคับต้องมีค่าจริง — null / สตริงว่าง / list ว่าง = ขาด\n             alignment_verdict รับเฉพาะ: Aligned | Watch | Misaligned\n             exec_summary ต้องเป็น list 5–7 รายการ\n2-sections   ต้องมี §0–§9 ครบ ชื่อตรง และเรียง 0→9:\n               §0 THE SITUATION & ALIGNMENT THESIS\n               §1 MANAGEMENT PROFILE & TRACK RECORD\n               §2 PROMISE vs DELIVERY\n               §3 COMPENSATION STRUCTURE\n               §4 SKIN IN THE GAME\n               §5 BOARD & GOVERNANCE STRUCTURE\n               §6 CAPITAL ALLOCATION & CRISIS BEHAVIOR\n               §7 ADAM'S VERDICT\n               §8 PLAIN-LANGUAGE SUMMARY\n               §9 APPENDIX\n2b-opinion   §0–§7 ทุกอันต้องมีบรรทัดที่ขึ้นต้นด้วย '(ความเห็น:' อยู่ในตัว section\n2c-required-line §2 ต้องมีหัวตาราง PROMISE vs DELIVERY ที่มีครบสามช่องในแถวเดียวกัน — 'สิ่งที่พูดไว้' · 'ผลจริง' · ช่องผลตัดสินที่มีตัวเลือก 'เงียบหาย' (คำที่พูดแล้วไม่พูดถึงอีกเลยคือหลักฐาน ไม่ใช่ช่องว่าง)\n2c-required-line §7 ต้องมีบรรทัด '**Bull:**' (คำแก้ต่างที่ดีที่สุดของฝ่ายบริหาร)\n2c-required-line §7 ต้องมีบรรทัด '**Bear:**' (ข้อโจมตีที่แรงที่สุดของฝ่าย activist)\n2c-required-line §7 ต้องมีหัวตาราง Governance Scorecard (ต้องมีช่อง 'ด้าน' · 'ธง' · 'อ้างจากไหน' ในแถวหัวเดียวกัน)\n2c-required-line §7 ต้องมีแถว Scorecard 'ค่าตอบแทน' ที่มีที่อ้างในแถวเดียวกัน\n2c-required-line §7 ต้องมีแถว Scorecard 'skin in the game' ที่มีที่อ้างในแถวเดียวกัน\n2c-required-line §7 ต้องมีแถว Scorecard 'บอร์ดและรายการเกี่ยวโยง' ที่มีที่อ้างในแถวเดียวกัน\n2c-required-line §7 ต้องมีแถว Scorecard 'การใช้เงิน' ที่มีที่อ้างในแถวเดียวกัน\n2c-required-line §7 ต้องมีแถว Scorecard 'ทำตามที่พูด' ที่มีที่อ้างในแถวเดียวกัน\n2c-required-line §7 ต้องมีแถว Scorecard 'โครงสร้างอำนาจและสิทธิรายย่อย' ที่มีที่อ้างในแถวเดียวกัน (หุ้นสองชั้น · สิทธิออกเสียงเทียบส่วนได้เสีย · ผลโหวตที่รายย่อยแพ้ · บอร์ดแบ่งชุด — มิติที่มักเป็นตัวชี้ขาดคำตัดสิน ถ้าไม่มีแถวของตัวเอง คำตัดสินจะสืบย้อนไม่ได้)\n3-verdict    ห้ามมีคำแนะนำลงทุน — จับ 30 รูปแบบไทย / 12 คำอังกฤษ:\n               ไทย:    น่าซื้อ · น่าขาย · น่าลงทุน · น่าสนใจลงทุน · ควรซื้อ · ควรขาย · ควรถือ · แนะนำซื้อ · แนะนำขาย · แนะนำถือ · ทยอยซื้อ · ไม่ควรลงทุน · คุ้มที่จะลงทุน · น่าเข้าซื้อ · ควรเข้าซื้อ · ทยอยเข้าซื้อ · จังหวะ/จุดเข้าซื้อ · เข้าซื้อสะสม · ควรเข้าลงทุน · ควรออกจากหุ้น/การลงทุน · ควรหลีกเลี่ยงหุ้น · หุ้นถูก (ราคาหุ้น) · หุ้นราคาถูก · หุ้นแพง · หุ้นราคาแพง · ราคาเป้าหมาย · มูลค่าเหมาะสม · ราคาที่เหมาะสม · ราคาต่ำ/สูงกว่ามูลค่าที่แท้จริง · ซื้อดีไหม\n               อังกฤษ: target price · price target · fair value · upside · downside · overweight · underweight · buy rating · sell rating · undervalued · overvalued · strong buy\n             (เนื้อหาธุรกิจปกติผ่านได้ เช่น 'เข้าซื้อกิจการ' · 'สินค้าราคาถูก' ·\n              'หุ้นถูกซื้อคืน' — คำกำกวมต้องผูกกับบริบทราคาหุ้นถึงจะ FAIL)\n4-citation   ทุก 'แถว' ตารางนอก §9 ที่มีตัวเลขข้อเท็จจริง ต้องมี\n             [ฟอร์ม ... Item ...] หรือ [tier2]/[tier3] อยู่ในแถวนั้นเอง\n             ยกเว้น: เลขลำดับล้วน 1–2 หลัก และแถวที่มี [ไม่เปิดเผย]/[ข้อมูลไม่พอ]\n             ตัวเลขจาก WebSearch/ข่าว = [tier3] เสมอ ห้ามใส่เป็น [ฟอร์ม ... Item ...]\n             คำว่า 'Item' ในวงเล็บ = 'ตำแหน่งในเอกสาร' ไม่ใช่เลข Item ของ 10-K เท่านั้น —\n             DEF 14A ใช้ Item 402/404/407 (Schedule 14A) · 8-K ใช้ Item 5.07 ·\n             SC 13D ใช้ Item 4 · Form 4 ใช้ 'Item Table I/II' — ทุกอันเป็น tier 1\n5-placeholder ห้ามมี [ยังไม่มีข้อมูล] ค้าง\n6-page-cite  ห้ามอ้างเลขหน้า (หน้า N · p.N · page N · pp.N)\n7-appendix   §9 ต้องมี 2 ตาราง: ที่มา = 4 ช่อง (ตัวเลข|ฟอร์ม|งวด|Item) ·\n             คำนวณ = 5 ช่องพอดี (ชื่อ|สูตร|ตัวตั้ง|ตัวหาร|ผล)\n             ห้ามมีช่องว่าง — จำนวนช่องคือตัวจำแนกตาราง แถว 6 ช่องขึ้นไปไม่ตรงตารางไหน\n8-recompute  ทุกแถวตารางคำนวณถูกคิดซ้ำด้วย Decimal เป็น 'ตัวตั้ง ÷ ตัวหาร'\n             มี % ในสูตรหรือผล → คูณ 100 ให้เอง\n             ส่วนต่าง (Δ/YoY): ใส่ผลลบที่คำนวณแล้วเป็นตัวตั้ง แล้วกำกับ\n             การลบไว้ในวงเล็บ เช่น  10,000 (=110,000−100,000) [10-K FY2025, Item 8]\n             เครื่องตรวจจะตรวจการลบในวงเล็บนั้นซ้ำด้วย\n             วงเล็บ (= ...) คิดได้ทั้ง + − × ÷ และวงเล็บซ้อน\n             แถวที่ไม่ใช่การหาร (คูณ/บวก) ให้ใส่ตัวหาร = 1 แล้วผลเท่ากับตัวตั้ง\n1-yaml (อดัม) alignment_verdict รับแค่ Aligned | Watch | Misaligned —\n             หลักฐานผสมหรือไม่พอให้ใช้ Watch ห้ามเลี่ยงไปเขียนค่าอื่น\n             alignment_verdict_basis บังคับมีและห้ามเว้นว่าง — คำตัดสินเรื่อง 'คน'\n             ที่ไม่มีที่อ้างคือการกล่าวหา ไม่ใช่การวิเคราะห์\n2c (อดัม)    ทั้ง 5 แถวของ Governance Scorecard §7 ต้องมีที่อ้าง ([...] หรือ §<เลข>)\n             อยู่ในแถวนั้นเอง — หัวตารางที่มีคำว่า 'อ้างจากไหน' อย่างเดียวไม่พอ\n",
+    "damon": "กฎที่ damon_check.py บังคับ (แหล่งความจริงเดียว)\n\n1-yaml       ฟิลด์บังคับ: ticker, company, form, fiscal_year, accession, filing_date, as_of, method, price, iv_bear, iv_base, iv_bull, iv_base_alt, iv_base_alt_basis, price_gap_pct, expected_return_pct, valuation_stance, valuation_stance_basis, tiers_used, exec_summary\n             ห้ามมี:      score, คะแนน, conviction, rating, recommendation, action, verdict\n             ทุกฟิลด์บังคับต้องมีค่าจริง — null / สตริงว่าง / list ว่าง = ขาด\n             valuation_stance รับเฉพาะ: Discount | Fair | Premium\n             method รับเฉพาะ: FCFF | FCFE | DDM | NAV\n             exec_summary ต้องเป็น list 5–7 รายการ\n1-yaml-stance valuation_stance ถูกคิดซ้ำด้วย Decimal จาก price เทียบช่วง iv_bear–iv_bull:\n               price < iv_bear → Discount · อยู่ในช่วง (รวมขอบ) → Fair · price > iv_bull → Premium\n             price/iv_bear/iv_bull ที่ไม่ใช่ตัวเลข หรือ iv_bear > iv_bull → FAIL\n2-sections   ต้องมี §0–§12 ครบ ชื่อตรง และเรียง 0→12:\n               §0 THE VALUATION SETUP & METHOD CHOICE\n               §1 HISTORICAL FINANCIAL FOUNDATION\n               §2 PROJECTION ASSUMPTIONS (3 SCENARIOS)\n               §3 WACC / DISCOUNT RATE\n               §4 DCF VALUATION\n               §5 TERMINAL VALUE STRESS\n               §6 RELATIVE VALUATION\n               §7 SCENARIO SYNTHESIS & EXPECTED RETURN\n               §8 REVERSE DCF\n               §9 SENSITIVITY ANALYSIS\n               §10 DAMON'S VERDICT\n               §11 PLAIN-LANGUAGE SUMMARY\n               §12 APPENDIX\n2b-opinion   §0–§10 ทุกอันต้องมีบรรทัดที่ขึ้นต้นด้วย '(ความเห็น:' อยู่ในตัว section\n             (§11 ไม่ต้อง เพราะทั้ง section เป็นภาษาคน · §12 ไม่ต้อง เพราะเป็นภาคผนวก)\n2c-required-line §0 ต้องมีบรรทัด 'นิยามมูลค่ากิจการ' ที่เขียนสูตร EV ออกมาให้ครบ (V33) — เมโม META ใช้ EV สองนิยามในย่อหน้าเดียวกันของ §6 ทำให้ตัวคูณอนาคตดูถูกกว่าจริง\n2c-required-line §2 ต้องมีหัวตารางพยากรณ์ที่มีครบสามช่องในแถวหัวเดียวกัน — 'ปี' · 'Revenue' · 'FCFF' (ตัวเลขพยากรณ์ต้องเดินให้เห็นเป็นแถว ๆ ไม่ใช่บรรยายลอยแล้วโผล่ผลที่ §4)\n2c-required-line §5 ต้องมีบรรทัด 'เงินทุนที่ลงไปปลายทาง' ที่เดินจากเส้น PP&E จริงแล้วคิด ROIC โดยนัย (V28) — เมโม META ตั้ง ROIC ปลายทาง 20% ทั้งที่งบดุลที่โมเดลสร้างเองให้ 18.32%\n2c-required-line §7 ต้องมีหัวตาราง scenario ที่มีช่อง 'ความน่าจะเป็น' และ 'IV/share' ในแถวหัวเดียวกัน\n2c-required-line §7 ต้องมีแถว scenario 'Bear' ที่มีตัวเลขในแถวเดียวกัน\n2c-required-line §7 ต้องมีแถว scenario 'Base' ที่มีตัวเลขในแถวเดียวกัน\n2c-required-line §7 ต้องมีแถว scenario 'Bull' ที่มีตัวเลขในแถวเดียวกัน\n2c-required-line §8 ต้องมีบรรทัดที่แปลงค่าที่แก้ย้อนได้กลับเป็น 'ตัวแปรตั้งต้น' ก่อนตัดสินว่าทำได้จริงไหม (V24) — เมโม META ประกาศว่า WACC 6.97% 'เท่ากับเบตาติดลบ' ทั้งที่คิดจริงได้ +0.55\n2c-required-line §8 ต้องมีบรรทัดที่แก้ย้อนอีกทิศด้วยการ 'ตรึงมูลค่าปลายทาง' (V25) — การตรึงช่วงชัดเจนแล้วแก้หาปลายทางทำให้ 100% ของช่องว่างตกที่ปลายทางโดยการก่อสร้าง จะอ้างสัดส่วนของช่องว่างได้ต้องแก้ย้อนสองทิศ\n2c-required-line §9 ต้องมีหัวตารางดุลพินิจที่มีครบสามช่องในแถวหัวเดียวกัน — 'ดุลพินิจ' · 'ทิศ' · 'IV' (V23) (ทุกจุดที่เลือกได้มากกว่าหนึ่งทาง ต้องอยู่ในตารางเดียวพร้อมทิศทางและผลต่อ IV แล้วปิดท้ายด้วย IV เมื่อพลิกทุกแถวพร้อมกัน → iv_base_alt)\n2c-required-line §10 ต้องมีบรรทัด '**Bull:**' (กรณีที่ดีที่สุดที่สมมติฐานรองรับได้)\n2c-required-line §10 ต้องมีบรรทัด '**Bear:**' (กรณีที่แย่ที่สุดที่สมมติฐานรองรับได้)\n2c-required-line §10 ต้องมีบรรทัด 'PRICE GAP' ที่มีตัวเลข % อยู่ในบรรทัดเดียวกัน (ช่องว่างราคา-มูลค่าคือข้อสรุปของเมโมทั้งใบ ห้ามเป็นหัวข้อเปล่า)\n2c-required-line §10 ต้องมีบรรทัด 'E[Return]' ที่มีตัวเลข % อยู่ในบรรทัดเดียวกัน (ผลตอบแทนที่คาดหวังแบบถ่วงความน่าจะเป็นข้ามสามฉาก)\n2c-required-line §11 ต้องมีบรรทัด DISCLAIMER ที่ระบุครบในบรรทัดเดียวกันว่า 'IV' · 'Margin of Safety' · 'Expected Return' คือช่องว่างราคา-มูลค่า และ 'ไม่ใช่คำสั่งซื้อ/ขาย' (กลไกเดียวที่กันการฟันธงหลังปิดกฎ 3-verdict — ห้ามดัดถ้อยคำ)\n2c-required-line §12 ต้องมีแถวตารางคำนวณที่แสดง 'NWC ต้นงวด' (คู่กับ NWC ปลายงวด) พร้อมนิพจน์ (= ...) ที่แกะเลขสองงวดออกมาให้เห็นจริง — เขียนคำลอย ๆ ในช่องสูตรโดยไม่โชว์ตัวเลขไม่ผ่าน (V27) — เมโม META หัก ΔNWC FY2025 เป็น +841 ที่ไม่มีที่มาและเครื่องหมายสวนธรรมเนียมตัวเอง\n3-verdict    ปิดไว้สำหรับ profile นี้ — งานคือการประเมินมูลค่า จึงพูดคำว่า\n             intrinsic value / discount / premium / margin of safety ได้ปกติ\n             ⚠️ 'น่าซื้อ' · 'แนะนำถือ' จะผ่านเครื่องตรวจด้วย — กันด้วยพรอมต์\n             กับบรรทัด DISCLAIMER บังคับเท่านั้น ตัวหลักต้องอ่านด้วยตา\n4-citation   ทุก 'แถว' ตารางนอก §12 ที่มีตัวเลขข้อเท็จจริง ต้องมี\n             [ฟอร์ม ... Item ...] หรือ [tier2]/[tier3] หรือ [สมมติฐาน: ...]\n             อยู่ในแถวนั้นเอง\n             ยกเว้น: เลขลำดับล้วน 1–2 หลัก และแถวที่มี [ไม่เปิดเผย]/[ข้อมูลไม่พอ]\n             [สมมติฐาน: ...] ใช้กับ 'ตัวเลขอนาคต' เท่านั้น (พยากรณ์ · กริด sensitivity ·\n             มูลค่าต่อฉาก) — เลขอดีตที่มี filing ให้อ้าง ห้ามหลบมาใช้ธงนี้\n             ตัวเลขจาก WebSearch/เว็บการเงิน = [tier3] เสมอ ห้ามใส่เป็น [ฟอร์ม ... Item ...]\n9-assumption ทุก 'บรรทัด' ที่ติดธง [สมมติฐาน: ...] ต้องมีแถวคู่ในตารางสมมติฐาน §12\n             (เครื่องตรวจนับบรรทัดเทียบจำนวนแถวจริง — ธงนี้จึงเป็นของแพง ใช้เท่าที่จำเป็น)\n5-placeholder ห้ามมี [ยังไม่มีข้อมูล] ค้าง\n6-page-cite  ห้ามอ้างเลขหน้า (หน้า N · p.N · page N · pp.N)\n7-appendix   §12 ต้องมี 3 ตาราง: สมมติฐาน = 3 ช่อง (สมมติฐาน|ค่าที่ใช้|เหตุผล) ·\n             ที่มา = 4 ช่อง (ตัวเลข|ฟอร์ม|งวด|Item) ·\n             คำนวณ = 5 ช่องพอดี (ชื่อ|สูตร|ตัวตั้ง|ตัวหาร|ผล)\n             ห้ามมีช่องว่าง — จำนวนช่องคือตัวจำแนกตาราง แถว 6 ช่องขึ้นไปไม่ตรงตารางไหน\n8-recompute  ทุกแถวตารางคำนวณถูกคิดซ้ำด้วย Decimal เป็น 'ตัวตั้ง ÷ ตัวหาร'\n             มี % ในสูตรหรือผล → คูณ 100 ให้เอง\n             ส่วนต่าง (Δ/YoY): ใส่ผลลบที่คำนวณแล้วเป็นตัวตั้ง แล้วกำกับ\n             การลบไว้ในวงเล็บ เช่น  10,000 (=110,000−100,000) [10-K FY2025, Item 8]\n             เครื่องตรวจจะตรวจการลบในวงเล็บนั้นซ้ำด้วย\n             วงเล็บ (= ...) คิดได้ทั้ง + − × ÷ และวงเล็บซ้อน\n             แถวที่ไม่ใช่การหาร (คูณ/บวก) ให้ใส่ตัวหาร = 1 แล้วผลเท่ากับตัวตั้ง\n1-yaml (เดมอน) method รับแค่ FCFF | FCFE | DDM | NAV — เลือกตามธุรกิจ (V5)\n             valuation_stance_basis บังคับมีและห้ามเว้นว่าง — คำตัดสินเชิงมูลค่า\n             ที่ไม่บอกว่าอิงสมมติฐานตัวไหน คือตัวเลขที่ตรวจย้อนไม่ได้\n             price / iv_bear / iv_base / iv_bull ต้องเป็นตัวเลขล้วน (สกุลเงินไปอยู่ใน\n             เนื้อเมโม) เพราะเครื่องตรวจต้องคิดซ้ำ\n2c (เดมอน)   §11 ต้องมีบรรทัด DISCLAIMER ครบถ้อยคำ — **กลไกเดียว** ที่เหลืออยู่\n             ในเครื่องตรวจหลังปิดกฎ 3-verdict ทั้งข้อ\n\n--- V23-V33 (รอบสอง — จาก /scrutinize เมโม META 2026-09-02) ---\n1-yaml (V23) iv_base_alt + iv_base_alt_basis บังคับมี = IV ฐานเมื่อพลิกทางเลือก\n             ดุลพินิจ 'ทุกข้อพร้อมกัน' — เมโม META พาดหัวช่องว่าง 81.93% ทั้งที่\n             ช่วงจริงตามธรรมเนียมที่ตัวเองยอมรับคือ 36.20-81.93%\n2c (V33)     §0 ต้องมีบรรทัด 'นิยามมูลค่ากิจการ' — EV นิยามเดียวทั้งเมโม\n2c (V28)     §5 ต้องมีบรรทัด 'เงินทุนที่ลงไปปลายทาง' — ROIC ปลายทางต้องผูกกับ\n             งบดุลที่ช่วงชัดเจนสร้าง ไม่ใช่พารามิเตอร์ลอย\n2c (V24)     §8 ต้องมีคำว่า 'ตัวแปรตั้งต้น' — ห้ามประกาศว่าเป็นไปไม่ได้จากสายตา\n2c (V25)     §8 ต้องมีคำว่า 'ตรึงมูลค่าปลายทาง' — แก้ย้อนสองทิศก่อนอ้างสัดส่วนช่องว่าง\n2c (V23)     §9 ต้องมีหัวตารางดุลพินิจ ('ดุลพินิจ' + 'ทิศ' + 'IV' ในแถวหัวเดียวกัน)\n2c (V27)     §12 ต้องมีแถว 'NWC ต้นงวด' — DNWC ต้องแกะกลับได้ถึง NWC สองงวด\n\nหมายเหตุ V26 · V29 · V30 · V31 · V32 อยู่ในพรอมต์อย่างเดียว เครื่องตรวจจับไม่ได้\n             (ต้องแก้ core.py ถึงจะบังคับได้ — ยังไม่ทำในรอบนี้)\n"
+  },
+  "active": [
+    {
+      "path": "scratch/tommun-check-fixtures/good.md",
+      "status": "ACTIVE POSITIVE",
+      "expected_exit": 0
+    }
+  ],
+  "generated_tests": [
+    "test_missing_audit_tables",
+    "test_canonical_pass",
+    "test_capm_recompute",
+    "test_finite_strict_numbers",
+    "test_prohibited_methods_global",
+    "test_routing_and_nonprice_shares_allowed",
+    "test_tax_boundaries",
+    "test_tax_source_and_unavailable",
+    "test_book_weights_and_ic",
+    "test_debt_zero_preferred",
+    "test_nonpositive_equity",
+    "test_kd_bounds_stable_flip",
+    "test_missing_kd_upper_and_partial_coverage",
+    "test_cash_three_signs_invalid_denominator",
+    "test_wrong_spread_and_flag_derived",
+    "test_missing_provenance",
+    "test_cli_direct_parity",
+    "test_other_profiles_baseline",
+    "test_yaml_nonfinite_junk_and_s8",
+    "test_no_blanket_negation_escape",
+    "test_statutory_requires_tax_note_even_if_unused",
+    "test_missing_required_numeric_inputs",
+    "test_schema_duplicate_and_location",
+    "test_endpoint_flags",
+    "test_tax_note_corresponding_fy",
+    "test_industry_group_not_company_beta",
+    "test_cash_prose_must_match_enum",
+    "test_roic_trend_cash_gap_fails_outside_s5",
+    "test_roic_trend_allowed_sentences",
+    "test_roic_trend_gap_threshold_and_base_year",
+    "test_native_filesystem_guard",
+    "test_gated_missing_capm_sources",
+    "test_preferred_missing_cost_dependent_na",
+    "test_rounded_debt_bound_cannot_change_flag",
+    "test_missing_beginning_balance_propagates_na",
+    "test_documented_yaml_spread_unit",
+    "test_preferred_rate_requires_official_filing",
+    "test_unknown_pretax_does_not_trigger_statutory",
+    "test_missing_roic_retains_calculable_wacc",
+    "test_proxy_warning_cannot_disable_method_bans",
+    "test_flag_boundaries_use_unrounded_spread"
+  ],
+  "generated_storage": "in-memory or automatically cleaned scratch tempfile; no fixture proliferation",
+  "legacy": [
+    {
+      "path": "scratch/tommun-check-fixtures/bad-assumption.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[9-assumption] เนื้อเมโมมี [สมมติฐาน: ...] 4 จุด (บรรทัด 59, 60, 83, 186) แต่ตารางสมมติฐานใน §10 มีแค่ 3 แถว"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-deriv.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[8-recompute] บรรทัด 303 (NOPAT FY2025): ตัวตั้ง เขียนนำหน้าว่า 16000 แต่ในวงเล็บ (= ...) คำนวณได้ 18000.00"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-flag-band.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[1-yaml-flag] roic_wacc_flag = 'ก้ำกึ่ง' แต่ roic_wacc_spread = 77.98 ตามเกณฑ์ต้องเป็น 'สร้างมูลค่าชัด'"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-flag-enum.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[1-yaml] roic_wacc_flag ต้องเป็นค่าใดค่าหนึ่งใน สร้างมูลค่าชัด | ก้ำกึ่ง | ทำลายมูลค่า | N/A — พบ 'ดีมาก'",
+        "[1-yaml-flag] roic_wacc_flag = 'ดีมาก' แต่ roic_wacc_spread = 7.84 ตามเกณฑ์ต้องเป็น 'สร้างมูลค่าชัด'",
+        "[1-yaml-flag] บรรทัดธง §8 (บรรทัด 223) เขียน 'สร้างมูลค่าชัด' แต่ YAML roic_wacc_flag = 'ดีมาก'"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-flag-spread-number.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[1-yaml-flag] บรรทัดธง §8 (บรรทัด 320) เขียนตัวเลข +70.00 แต่ YAML roic_wacc_spread = 77.98"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-flag-yaml-vs-s8.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[1-yaml-flag] roic_wacc_flag = 'ทำลายมูลค่า' แต่ roic_wacc_spread = 77.98 ตามเกณฑ์ต้องเป็น 'สร้างมูลค่าชัด'",
+        "[1-yaml-flag] บรรทัดธง §8 (บรรทัด 320) เขียน 'สร้างมูลค่าชัด' แต่ YAML roic_wacc_flag = 'ทำลายมูลค่า'"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-math.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[8-recompute] บรรทัด 307 (ROIC FY2025): คำนวณซ้ำได้ 16.842105 แต่ในเมโมเขียน 21.00 (สูตร: NOPAT ÷ invested capital เฉลี่ย) — ตารางนี้รองรับเฉพาะ 'ตัวตั้ง ÷ ตัวหาร'; ถ้าเป็นส่วนต่าง (Δ / YoY) ให้ใส่ผลลบที่คำนวณแล้วเป็นตัวตั้ง แล้วกำกับที่มาแบบ  10,000 (=110,000−100,000) [ฟอร์ม งวด Item]"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-noassumptiontable.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[7-appendix] ไม่พบตารางสมมติฐาน (สมมติฐาน | เหตุผล | กระทบตัวเลขไหน) ใน §10",
+        "[9-assumption] เนื้อเมโมมี [สมมติฐาน: ...] 2 จุด (บรรทัด 81, 184) แต่ตารางสมมติฐานใน §10 มีแค่ 0 แถว"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-nobridge.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[2c-required-line] §3 ไม่มีสะพาน NI → OCF — บรรทัดหรือตารางที่ไล่จากกำไรสุทธิไป OCF (คำว่า 'สะพาน' + 'OCF')"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-nocashline.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[2c-required-line] §5 ไม่มีบรรทัดสัดส่วนเงินสด — 'เงินสด [+ เงินลงทุนระยะสั้น] ... X.XX% ของสินทรัพย์รวม'"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-noflag.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[2c-required-line] §8 ไม่มีบรรทัดธง — 'ธง ROIC เทียบ book WACC: <สร้างมูลค่าชัด|ก้ำกึ่ง|ทำลายมูลค่า|N/A> — ...'"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-noicline.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[2c-required-line] §5 ไม่มีบรรทัดสัดส่วนเงินสดเทียบ IC — 'เงินสด ... X.XX% ของ invested capital (IC)' (ตัวหารที่ใช้ตัดสินเกณฑ์ 20% ต้องเป็น IC ไม่ใช่สินทรัพย์รวม)"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-noinference.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[2b-opinion] §3 ไม่มีบรรทัด '(อนุมาน: ...)' ปิดท้าย"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-nowacc-yaml.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[1-yaml] ฟิลด์บังคับขาด: book_wacc"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-pe.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[3b-forbidden] พบคำต้องห้าม 'P/E' (บรรทัด 223)"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-section.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[2-sections] §6 ชื่อหัวข้อไม่ตรง — คาด 'WORKING CAPITAL CYCLE' พบ 'WORKING CAPITAL'"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-verdict.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[3-verdict] พบคำ verdict การลงทุน 'น่าลงทุน' (บรรทัด 233)",
+        "[3-verdict] พบคำ verdict การลงทุน 'หุ้นถูก (ราคาหุ้น)' (บรรทัด 233)"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/bad-yaml-price.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 1,
+      "baseline_failures": [
+        "[1-yaml] มีฟิลด์คะแนน/verdict ที่ห้ามมี: price"
+      ]
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/should_pass-flag-na.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 0,
+      "baseline_failures": []
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/should_pass-no9opinion.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 0,
+      "baseline_failures": []
+    },
+    {
+      "path": "scratch/tommun-check-fixtures/should_pass-pe-in-appendix.md",
+      "status": "LEGACY NEGATIVE",
+      "expected_exit": 1,
+      "required_rule_ids": [
+        "12-tommun-schema"
+      ],
+      "baseline_exit": 0,
+      "baseline_failures": []
+    }
+  ]
+}

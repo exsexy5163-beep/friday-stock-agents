@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# marketdata — launcher บางๆ ผูก venv 3.12 ของ toolkit ให้ cli.py เสมอ
+# (resolve dir ตัวเอง → robust ต่อ cwd/PATH/ย้ายโฟลเดอร์; กันปัญหา shebang ผิด interpreter)
+set -euo pipefail
+DIR="$(cd "$(dirname "$0")" && pwd)"
+exec "$DIR/.venv/bin/python" "$DIR/cli.py" "$@"

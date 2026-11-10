@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "friday-marketdata-mcp": {
+      "command": "__FRIDAY_ROOT__/tools/marketdata/.venv/bin/python",
+      "args": ["__FRIDAY_ROOT__/tools/marketdata/mcp_server.py"]
+    }
+  }
+}
